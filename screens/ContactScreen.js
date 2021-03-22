@@ -1,6 +1,8 @@
 import * as React from "react";
-import { View, StyleSheet, Image } from "react-native";
-import { List, Title } from "react-native-paper";
+import { View, StyleSheet, Image, Text, Button } from "react-native";
+import { List, Title, Card, Paragraph } from "react-native-paper";
+import { StackActions } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 const contactsData = [
   {
@@ -29,7 +31,7 @@ const contactsData = [
   },
 ];
 
-export default function ContactScreen() {
+function ContactHomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Title style={styles.title}> Contacts </Title>
@@ -47,11 +49,53 @@ export default function ContactScreen() {
                   source={{ uri: item.pic }}
                 />
               )}
+              onPress={() =>
+                navigation.navigate("ContactDetail", {
+                  name: item.name,
+                  title: item.title,
+                  company: item.company,
+                  pic: item.pic,
+                })
+              }
             />
           );
         })}
       </View>
     </View>
+  );
+}
+
+function ContactDetailScreen({ route, navigation }) {
+  const { name, company, title, pic } = route.params;
+  return (
+    <View
+      style={{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <Card style={{ margin: 10, width: "80%" }}>
+        <Card.Cover source={{ uri: pic }} />
+        <Card.Content>
+          <Title>{name}</Title>
+          <Paragraph>{title}</Paragraph>
+          <Paragraph>{company}</Paragraph>
+        </Card.Content>
+      </Card>
+      <Button title="Go back" onPress={() => navigation.goBack()} />
+    </View>
+  );
+}
+
+const Stack = createStackNavigator();
+
+export default function ContactScreen() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="ContactHome" component={ContactHomeScreen} />
+      <Stack.Screen name="ContactDetail" component={ContactDetailScreen} />
+    </Stack.Navigator>
   );
 }
 
